@@ -14,10 +14,8 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        getSupportActionBar().hide();
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splashscreen);
+        setContentView(R.layout.activity_splashscreen);
 
         GifImageView gifImageView = (GifImageView) findViewById(R.id.splashgif);
         gifImageView.setGifImageResource(R.drawable.bg1);
