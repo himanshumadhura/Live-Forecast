@@ -14,28 +14,26 @@
         android:text="Live Forecast"
         android:fontFamily="@font/algerian_regular"
         android:textColor="@color/white"
-        android:textSize="16pt"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.837" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center" >
-        <com.example.liveforcast.GifImageView
-            android:id="@+id/splashgif"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias=".500"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias=".500"
-            tools:ignore="MissingConstraints" />
-    </LinearLayout>
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/splashGif"
+        android:layout_width="333dp"
+        android:layout_height="307dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginEnd="15dp"
+        android:src="@drawable/splashbg"
+        app:layout_constraintBottom_toTopOf="@+id/splashtxt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.573"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.787" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

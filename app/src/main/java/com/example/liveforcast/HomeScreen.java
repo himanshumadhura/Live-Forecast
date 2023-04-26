@@ -2,6 +2,7 @@ package com.example.liveforcast;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,12 +14,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import com.example.liveforcast.API_Network.ApiInterface;
@@ -29,6 +32,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,11 +51,10 @@ public class HomeScreen extends AppCompatActivity {
     Geocoder geocoder;
     int PERMISSION_ID = 44;
     double longitude, latitude;
-    String City, typeName, cityName;
-
-    TextView type;
-    TextView city;
-
+    String City;
+    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail;
+    ConstraintLayout wt_layout;
+    Loading loadGif;
     private String apiKey = "5f539f194620d4d29cccd756d311648c";
 
     @SuppressLint("MissingInflatedId")
@@ -59,14 +63,26 @@ public class HomeScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homescreen);
 
-        type = findViewById(R.id.type);
-        city = findViewById(R.id.city);
+        loadGif = new Loading(this);
+        loadGif.showDialog();
+
+        cityName = findViewById(R.id.city);
+        temp = findViewById(R.id.temp);
+        weather_des = findViewById(R.id.weather_des);
+        feels_like_temp = findViewById(R.id.feel_like_temp);
+        humidity_per = findViewById(R.id.humidity_per);
+        wind_dir = findViewById(R.id.wind_dir);
+        wind_speed = findViewById(R.id.wind_speed);
+        uv_detail = findViewById(R.id.uv_detail);
+        visibility_detail = findViewById(R.id.visibility_detail);
+        air_pressure = findViewById(R.id.air_pressure);
+        wt_layout = findViewById(R.id.wt_layout);
+        precip_detail = findViewById(R.id.precip_detail);
+        cloud_cover_detail = findViewById(R.id.cloud_cover_detail);
 
         flpc = LocationServices.getFusedLocationProviderClient(this);
         geocoder = new Geocoder(this, Locale.getDefault());
         getLastLocation();
-        getData();
-
     }
 
     public void getLastLocation() {
@@ -94,6 +110,7 @@ public class HomeScreen extends AppCompatActivity {
                             try{
                                 List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
                                 City = addresses.get(0).getLocality();
+                                getData();
                             }catch(IOException e){
                                 e.printStackTrace();
                             }
@@ -101,7 +118,7 @@ public class HomeScreen extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(HomeScreen.this, "Loaction is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
+               Toast.makeText(HomeScreen.this, "Loaction is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(i);
             }
@@ -144,17 +161,30 @@ public class HomeScreen extends AppCompatActivity {
 
     public void getData(){
         RetrofitInstance.getInstance();
+
         RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City)).enqueue(new Callback<ModelClass>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call<ModelClass> call, @NonNull Response<ModelClass> response) {
                 assert response.body() != null;
-                typeName = response.body().getRequest().getType();
-                cityName = response.body().getRequest().getQuery();
-
-                type.setText(typeName);
-                city.setText(cityName);
 
                 Log.e("api", "onResponse : " + response.body().getRequest().getType() + " ----> " + response.body().getRequest().getQuery());
+
+                cityName.setText(String.valueOf(response.body().getLocation().getName()));
+                temp.setText(String.valueOf(response.body().getCurrent().getTemperature()));
+                weather_des.setText(" " + response.body().getCurrent().getWeather_descriptions().get(0));
+                feels_like_temp.setText((response.body().getCurrent().getFeelslike()) + "°C");
+                humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
+                wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
+                wind_speed.setText((response.body().getCurrent().getWind_speed()) + " Km/h");
+                uv_detail.setText(String.valueOf(response.body().getCurrent().getUv_index()));
+                visibility_detail.setText((response.body().getCurrent().getVisibility()) + " Km");
+                air_pressure.setText((response.body().getCurrent().getPressure()) + " hPa");
+                precip_detail.setText((response.body().getCurrent().getPrecip()) + "%");
+                cloud_cover_detail.setText((response.body().getCurrent().getCloudcover() + "%"));
+
+                wt_layout.setVisibility(View.VISIBLE);
+                loadGif.hideDialog();
             }
 
             @Override
