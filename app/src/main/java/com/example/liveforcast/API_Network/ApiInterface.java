@@ -7,6 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
-        @GET("current")
-        Call<ModelClass> getJson (@Query("access_key") String apiKey, @Query("query") String Query);
+        @GET("current.json")
+        Call<ModelClass> getJson (@Query("key") String apiKey, @Query("q") String Query);
 }

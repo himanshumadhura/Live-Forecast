@@ -3,74 +3,149 @@ package com.example.liveforcast.API_Network;
 import java.util.List;
 
 public class Current {
-    private String observation_time;
-    private int temperature;
-    private int weather_code;
-    private List<String> weather_icons;
-    private List<String> weather_descriptions;
-    private int wind_speed;
+    private int last_updated_epoch;
+    private String last_updated;
+    private int temp_c;
+    private double temp_f;
+    private int is_day;
+    private Condition condition;
+    private double wind_mph;
+    private double wind_kph;
     private int wind_degree;
     private String wind_dir;
-    private int pressure;
-    private int precip;
+    private int pressure_mb;
+    private double pressure_in;
+    private int precip_mm;
+    private int precip_in;
     private int humidity;
-    private int cloudcover;
-    private int feelslike;
-    private int uv_index;
-    private int visibility;
-    private String is_day;
+    private int cloud;
+    private double feelslike_c;
+    private double feelslike_f;
+    private int vis_km;
+    private int vis_miles;
+    private int uv;
+    private double gust_mph;
+    private double gust_kph;
 
-    public Current() {}
-
-    public Current(String observation_time, int temperature, int weather_code, List<String> weather_icons, List<String> weather_descriptions, int wind_speed, int wind_degree, String wind_dir, int pressure, int precip, int humidity, int cloudcover, int feelslike, int uv_index, int visibility, String is_day) {
-        super();
-        this.observation_time = observation_time;
-        this.temperature = temperature;
-        this.weather_code = weather_code;
-        this.weather_icons = weather_icons;
-        this.weather_descriptions = weather_descriptions;
-        this.wind_speed = wind_speed;
-        this.wind_degree = wind_degree;
-        this.wind_dir = wind_dir;
-        this.pressure = pressure;
-        this.precip = precip;
-        this.humidity = humidity;
-        this.cloudcover = cloudcover;
-        this.feelslike = feelslike;
-        this.uv_index = uv_index;
-        this.visibility = visibility;
-        this.is_day = is_day;
+    public Current() {
     }
 
-    public String getObservation_time() {return observation_time;}
+    public Current(int last_updated_epoch, String last_updated, int temp_c, double temp_f, int is_day, Condition condition, double wind_mph, double wind_kph, int wind_degree, String wind_dir, int pressure_mb, double pressure_in, int precip_mm, int precip_in, int humidity, int cloud, double feelslike_c, double feelslike_f, int vis_km, int vis_miles, int uv, double gust_mph, double gust_kph) {
+        super();
+        this.last_updated_epoch = last_updated_epoch;
+        this.last_updated = last_updated;
+        this.temp_c = temp_c;
+        this.temp_f = temp_f;
+        this.is_day = is_day;
+        this.condition = condition;
+        this.wind_mph = wind_mph;
+        this.wind_kph = wind_kph;
+        this.wind_degree = wind_degree;
+        this.wind_dir = wind_dir;
+        this.pressure_mb = pressure_mb;
+        this.pressure_in = pressure_in;
+        this.precip_mm = precip_mm;
+        this.precip_in = precip_in;
+        this.humidity = humidity;
+        this.cloud = cloud;
+        this.feelslike_c = feelslike_c;
+        this.feelslike_f = feelslike_f;
+        this.vis_km = vis_km;
+        this.vis_miles = vis_miles;
+        this.uv = uv;
+        this.gust_mph = gust_mph;
+        this.gust_kph = gust_kph;
+    }
 
-    public int getTemperature() {return temperature;}
+    public int getLast_updated_epoch() {
+        return last_updated_epoch;
+    }
 
-    public int getWeather_code() {return weather_code;}
+    public String getLast_updated() {
+        return last_updated;
+    }
 
-    public List<String> getWeather_icons() {return weather_icons;}
+    public int getTemp_c() {
+        return temp_c;
+    }
 
-    public List<String> getWeather_descriptions() {return weather_descriptions;}
+    public double getTemp_f() {
+        return temp_f;
+    }
 
-    public int getWind_speed() {return wind_speed;}
+    public int getIs_day() {
+        return is_day;
+    }
 
-    public int getWind_degree() {return wind_degree;}
+    public Condition getCondition() {
+        return condition;
+    }
 
-    public String getWind_dir() {return wind_dir;}
+    public double getWind_mph() {
+        return wind_mph;
+    }
 
-    public int getPressure() {return pressure;}
+    public double getWind_kph() {
+        return wind_kph;
+    }
 
-    public int getPrecip() {return precip;}
+    public int getWind_degree() {
+        return wind_degree;
+    }
 
-    public int getHumidity() {return humidity;}
+    public String getWind_dir() {
+        return wind_dir;
+    }
 
-    public int getCloudcover() {return cloudcover;}
+    public int getPressure_mb() {
+        return pressure_mb;
+    }
 
-    public int getFeelslike() {return feelslike;}
+    public double getPressure_in() {
+        return pressure_in;
+    }
 
-    public int getUv_index() {return uv_index;}
+    public int getPrecip_mm() {
+        return precip_mm;
+    }
 
-    public int getVisibility() {return visibility;}
+    public int getPrecip_in() {
+        return precip_in;
+    }
 
-    public String getIs_day() {return is_day;}
+    public int getHumidity() {
+        return humidity;
+    }
+
+    public int getCloud() {
+        return cloud;
+    }
+
+    public double getFeelslike_c() {
+        return feelslike_c;
+    }
+
+    public double getFeelslike_f() {
+        return feelslike_f;
+    }
+
+    public int getVis_km() {
+        return vis_km;
+    }
+
+    public int getVis_miles() {
+        return vis_miles;
+    }
+
+    public int getUv() {
+        return uv;
+    }
+
+    public double getGust_mph() {
+        return gust_mph;
+    }
+
+    public double getGust_kph() {
+        return gust_kph;
+    }
 }

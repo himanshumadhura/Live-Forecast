@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,9 @@ import com.example.liveforcast.API_Network.ApiInterface;
 import com.example.liveforcast.API_Network.ModelClass;
 import com.example.liveforcast.API_Network.RetrofitInstance;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -55,7 +59,7 @@ public class HomeScreen extends AppCompatActivity {
     TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail;
     ConstraintLayout wt_layout;
     Loading loadGif;
-    private String apiKey = "5f539f194620d4d29cccd756d311648c";
+    private String apiKey = "f6daa7c697944f61bee95421232804";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -103,29 +107,66 @@ public class HomeScreen extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Location> task) {
                         Location loc = task.getResult();
                         if (loc == null) {
-                            Log.d("Res", String.valueOf(loc));
+                            requestNewLocationData();
                         } else {
                             longitude = loc.getLongitude();
                             latitude = loc.getLatitude();
-                            try{
+                            try {
                                 List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
                                 City = addresses.get(0).getLocality();
                                 getData();
-                            }catch(IOException e){
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     }
                 });
             } else {
-               Toast.makeText(HomeScreen.this, "Loaction is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeScreen.this, "Loaction is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(i);
             }
-        }else{
+        } else {
             requestPermissions();
         }
     }
+
+    public void requestNewLocationData() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(5);
+        mLocationRequest.setFastestInterval(0);
+        mLocationRequest.setNumUpdates(1);
+
+        flpc = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        flpc.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+    }
+
+    public LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(@NonNull LocationResult locationResult) {
+            Location mLastLocation = locationResult.getLastLocation();
+            latitude = mLastLocation.getLatitude();
+            longitude = mLastLocation.getLongitude();
+            try{
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                City = addresses.get(0).getLocality();
+                getData();
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+    };
 
     public boolean isLocationEnabled(){
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -161,27 +202,24 @@ public class HomeScreen extends AppCompatActivity {
 
     public void getData(){
         RetrofitInstance.getInstance();
-
         RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City)).enqueue(new Callback<ModelClass>() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call<ModelClass> call, @NonNull Response<ModelClass> response) {
                 assert response.body() != null;
 
-                Log.e("api", "onResponse : " + response.body().getRequest().getType() + " ----> " + response.body().getRequest().getQuery());
-
                 cityName.setText(String.valueOf(response.body().getLocation().getName()));
-                temp.setText(String.valueOf(response.body().getCurrent().getTemperature()));
-                weather_des.setText(" " + response.body().getCurrent().getWeather_descriptions().get(0));
-                feels_like_temp.setText((response.body().getCurrent().getFeelslike()) + "°C");
+                temp.setText(String.valueOf(response.body().getCurrent().getTemp_c()));
+                weather_des.setText(" " + response.body().getCurrent().getCondition().getText());
+                feels_like_temp.setText((response.body().getCurrent().getFeelslike_c()) + "°C");
                 humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
                 wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
-                wind_speed.setText((response.body().getCurrent().getWind_speed()) + " Km/h");
-                uv_detail.setText(String.valueOf(response.body().getCurrent().getUv_index()));
-                visibility_detail.setText((response.body().getCurrent().getVisibility()) + " Km");
-                air_pressure.setText((response.body().getCurrent().getPressure()) + " hPa");
-                precip_detail.setText((response.body().getCurrent().getPrecip()) + "%");
-                cloud_cover_detail.setText((response.body().getCurrent().getCloudcover() + "%"));
+                wind_speed.setText((response.body().getCurrent().getWind_kph()) + " Km/h");
+                uv_detail.setText(String.valueOf(response.body().getCurrent().getUv()));
+                visibility_detail.setText((response.body().getCurrent().getVis_km()) + " Km");
+                air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
+                precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
+                cloud_cover_detail.setText((response.body().getCurrent().getCloud() + "%"));
 
                 wt_layout.setVisibility(View.VISIBLE);
                 loadGif.hideDialog();

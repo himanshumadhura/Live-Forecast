@@ -4,29 +4,29 @@ public class Location {
     private String name;
     private String country;
     private String region;
-    private String lat;
-    private String lon;
-    private String timezoneId;
+//    private int lat;
+//    private int lon;
+    private String tz_id;
     private String localtime;
-    private int localtimeEpoch;
-    private String utcOffset;
+    private int localtime_epoch;
 
     public Location(){}
 
-    public Location(String name, String country, String region, String lat, String lon, String timezoneId, String localtime, int localtimeEpoch, String utcOffset) {
+    public Location(String name, String country, String region, String lat, String lon, String tz_id, String localtime, int localtime_epoch) {
         super();
         this.name = name;
         this.country = country;
         this.region = region;
-        this.lat = lat;
-        this.lon = lon;
-        this.timezoneId = timezoneId;
+//        this.lat = Integer.parseInt(lat);
+//        this.lon = Integer.parseInt(lon);
+        this.tz_id = tz_id;
         this.localtime = localtime;
-        this.localtimeEpoch = localtimeEpoch;
-        this.utcOffset = utcOffset;
+        this.localtime_epoch = localtime_epoch;
     }
 
-    public String getName() {return name;}
+    public String getName() {
+        return name;
+    }
 
     public String getCountry() {
         return country;
@@ -36,27 +36,23 @@ public class Location {
         return region;
     }
 
-    public String getLat() {
-        return lat;
-    }
+//    public float getLat() {
+//        return lat;
+//    }
 
-    public String getLon() {
-        return lon;
-    }
+//    public float getLon() {
+//        return lon;
+//    }
 
-    public String getTimezoneId() {
-        return timezoneId;
+    public String getTz_id() {
+        return tz_id;
     }
 
     public String getLocaltime() {
         return localtime;
     }
 
-    public int getLocaltimeEpoch() {
-        return localtimeEpoch;
-    }
-
-    public String getUtcOffset() {
-        return utcOffset;
+    public int getLocaltime_epoch() {
+        return localtime_epoch;
     }
 }

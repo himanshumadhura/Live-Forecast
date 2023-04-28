@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
 
-    private String api = "http://api.weatherstack.com/";
+    private String api = "http://api.weatherapi.com/v1/";
     public static RetrofitInstance instance;
     public static ApiInterface apiInterface;
 
