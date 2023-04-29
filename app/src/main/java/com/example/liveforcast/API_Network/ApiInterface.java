@@ -7,6 +7,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
-        @GET("current.json")
-        Call<ModelClass> getJson (@Query("key") String apiKey, @Query("q") String Query);
+        @GET("forecast.json")
+        Call<ModelClass> getJson (@Query("key") String apiKey, @Query("q") String Query, @Query("days") String Days);
 }

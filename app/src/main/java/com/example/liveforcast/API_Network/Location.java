@@ -4,21 +4,21 @@ public class Location {
     private String name;
     private String country;
     private String region;
-//    private int lat;
-//    private int lon;
+    private double lat;
+    private double lon;
     private String tz_id;
     private String localtime;
     private int localtime_epoch;
 
-    public Location(){}
+    public Location(){
+    }
 
-    public Location(String name, String country, String region, String lat, String lon, String tz_id, String localtime, int localtime_epoch) {
-        super();
+    public Location(String name, String country, String region, double lat, double lon, String tz_id, String localtime, int localtime_epoch) {
         this.name = name;
         this.country = country;
         this.region = region;
-//        this.lat = Integer.parseInt(lat);
-//        this.lon = Integer.parseInt(lon);
+        this.lat = lat;
+        this.lon = lon;
         this.tz_id = tz_id;
         this.localtime = localtime;
         this.localtime_epoch = localtime_epoch;
@@ -36,13 +36,13 @@ public class Location {
         return region;
     }
 
-//    public float getLat() {
-//        return lat;
-//    }
+    public double getLat() {
+        return lat;
+    }
 
-//    public float getLon() {
-//        return lon;
-//    }
+    public double getLon() {
+        return lon;
+    }
 
     public String getTz_id() {
         return tz_id;

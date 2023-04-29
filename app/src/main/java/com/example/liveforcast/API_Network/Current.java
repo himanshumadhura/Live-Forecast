@@ -13,24 +13,24 @@ public class Current {
     private double wind_kph;
     private int wind_degree;
     private String wind_dir;
-    private int pressure_mb;
+    private double pressure_mb;
     private double pressure_in;
-    private int precip_mm;
-    private int precip_in;
+    private double precip_mm;
+    private double precip_in;
     private int humidity;
     private int cloud;
     private double feelslike_c;
     private double feelslike_f;
-    private int vis_km;
-    private int vis_miles;
-    private int uv;
+    private double vis_km;
+    private double vis_miles;
+    private double uv;
     private double gust_mph;
     private double gust_kph;
 
     public Current() {
     }
 
-    public Current(int last_updated_epoch, String last_updated, int temp_c, double temp_f, int is_day, Condition condition, double wind_mph, double wind_kph, int wind_degree, String wind_dir, int pressure_mb, double pressure_in, int precip_mm, int precip_in, int humidity, int cloud, double feelslike_c, double feelslike_f, int vis_km, int vis_miles, int uv, double gust_mph, double gust_kph) {
+    public Current(int last_updated_epoch, String last_updated, int temp_c, double temp_f, int is_day, Condition condition, double wind_mph, double wind_kph, int wind_degree, String wind_dir, double pressure_mb, double pressure_in, double precip_mm, double precip_in, int humidity, int cloud, double feelslike_c, double feelslike_f, double vis_km, double vis_miles, double uv, double gust_mph, double gust_kph) {
         super();
         this.last_updated_epoch = last_updated_epoch;
         this.last_updated = last_updated;
@@ -97,7 +97,7 @@ public class Current {
         return wind_dir;
     }
 
-    public int getPressure_mb() {
+    public double getPressure_mb() {
         return pressure_mb;
     }
 
@@ -105,11 +105,11 @@ public class Current {
         return pressure_in;
     }
 
-    public int getPrecip_mm() {
+    public double getPrecip_mm() {
         return precip_mm;
     }
 
-    public int getPrecip_in() {
+    public double getPrecip_in() {
         return precip_in;
     }
 
@@ -129,15 +129,15 @@ public class Current {
         return feelslike_f;
     }
 
-    public int getVis_km() {
+    public double getVis_km() {
         return vis_km;
     }
 
-    public int getVis_miles() {
+    public double getVis_miles() {
         return vis_miles;
     }
 
-    public int getUv() {
+    public double getUv() {
         return uv;
     }
 

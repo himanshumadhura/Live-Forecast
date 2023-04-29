@@ -16,6 +16,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +57,8 @@ public class HomeScreen extends AppCompatActivity {
     int PERMISSION_ID = 44;
     double longitude, latitude;
     String City;
-    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail;
+    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail, max_min_temp;
+    ScrollView scrollView;
     ConstraintLayout wt_layout;
     Loading loadGif;
     private String apiKey = "f6daa7c697944f61bee95421232804";
@@ -73,6 +75,7 @@ public class HomeScreen extends AppCompatActivity {
         cityName = findViewById(R.id.city);
         temp = findViewById(R.id.temp);
         weather_des = findViewById(R.id.weather_des);
+        max_min_temp = findViewById(R.id.max_min_temp);
         feels_like_temp = findViewById(R.id.feel_like_temp);
         humidity_per = findViewById(R.id.humidity_per);
         wind_dir = findViewById(R.id.wind_dir);
@@ -202,20 +205,33 @@ public class HomeScreen extends AppCompatActivity {
 
     public void getData(){
         RetrofitInstance.getInstance();
-        RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City)).enqueue(new Callback<ModelClass>() {
+        RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3").enqueue(new Callback<ModelClass>() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call<ModelClass> call, @NonNull Response<ModelClass> response) {
                 assert response.body() != null;
 
+                double uv = response.body().getCurrent().getUv();
+                String uv_des;
+                if(uv>0 & uv<=3){
+                    uv_des="Low";
+                }else if(uv>3 & uv<=6){
+                    uv_des="Moderate";
+                }else if(uv>6 & uv<=9){
+                    uv_des="High";
+                }else{
+                    uv_des="Very High";
+                }
+
                 cityName.setText(String.valueOf(response.body().getLocation().getName()));
                 temp.setText(String.valueOf(response.body().getCurrent().getTemp_c()));
                 weather_des.setText(" " + response.body().getCurrent().getCondition().getText());
+                max_min_temp.setText("Max/Min: " + response.body().getForecast().getForecastday().get(0).getDay().getMaxtemp_c() + "/" + response.body().getForecast().getForecastday().get(0).getDay().getMintemp_c() + "°C");
                 feels_like_temp.setText((response.body().getCurrent().getFeelslike_c()) + "°C");
                 humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
                 wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
                 wind_speed.setText((response.body().getCurrent().getWind_kph()) + " Km/h");
-                uv_detail.setText(String.valueOf(response.body().getCurrent().getUv()));
+                uv_detail.setText(uv_des);
                 visibility_detail.setText((response.body().getCurrent().getVis_km()) + " Km");
                 air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
                 precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
