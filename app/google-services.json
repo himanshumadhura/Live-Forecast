@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "547051137417",
+    "project_id": "live-forecast",
+    "storage_bucket": "live-forecast.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547051137417:android:2c77b2f72b2725c2035958",
+        "android_client_info": {
+          "package_name": "com.example.liveforcast"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547051137417-oktej3qqpf8ja29tgg28f6ssf1cohq0n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.liveforcast",
+            "certificate_hash": "26fb46ee3b5d32e7d5f5048a193a8ba6793530c6"
+          }
+        },
+        {
+          "client_id": "547051137417-g87d0q13gv8if8pq1lpfo1v5tu28h3us.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI6Nr0lauKbjRfsCNQ__LqWbK8iPl7FFs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547051137417-g87d0q13gv8if8pq1lpfo1v5tu28h3us.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

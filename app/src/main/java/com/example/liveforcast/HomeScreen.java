@@ -2,7 +2,6 @@ package com.example.liveforcast;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,23 +9,24 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.os.Build;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.ScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.example.liveforcast.API_Network.ApiInterface;
+import com.bumptech.glide.Glide;
 import com.example.liveforcast.API_Network.ModelClass;
 import com.example.liveforcast.API_Network.RetrofitInstance;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -37,8 +37,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,8 +47,6 @@ import java.util.Locale;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeScreen extends AppCompatActivity {
 
@@ -56,12 +54,11 @@ public class HomeScreen extends AppCompatActivity {
     Geocoder geocoder;
     int PERMISSION_ID = 44;
     double longitude, latitude;
-    String City;
-    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail, max_min_temp;
-    ScrollView scrollView;
+    String City, hr;
+    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail, max_min_temp, hour, temp_hour;
     ConstraintLayout wt_layout;
     Loading loadGif;
-    private String apiKey = "f6daa7c697944f61bee95421232804";
+    private final String apiKey = "f6daa7c697944f61bee95421232804";
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -76,6 +73,8 @@ public class HomeScreen extends AppCompatActivity {
         temp = findViewById(R.id.temp);
         weather_des = findViewById(R.id.weather_des);
         max_min_temp = findViewById(R.id.max_min_temp);
+//        hour = findViewById(R.id.hour);
+        temp_hour = findViewById(R.id.hour_temp);
         feels_like_temp = findViewById(R.id.feel_like_temp);
         humidity_per = findViewById(R.id.humidity_per);
         wind_dir = findViewById(R.id.wind_dir);
@@ -89,6 +88,17 @@ public class HomeScreen extends AppCompatActivity {
 
         flpc = LocationServices.getFusedLocationProviderClient(this);
         geocoder = new Geocoder(this, Locale.getDefault());
+
+
+        for (int i = 0; i < 24; i++) {
+
+            FragmentManager frm = getSupportFragmentManager();
+            FragmentTransaction ft = frm.beginTransaction();
+            ft.add(R.id.frag1, new fragment1(i + ":00"));
+            ft.commit();
+        }
+
+
         getLastLocation();
     }
 
@@ -161,26 +171,26 @@ public class HomeScreen extends AppCompatActivity {
             Location mLastLocation = locationResult.getLastLocation();
             latitude = mLastLocation.getLatitude();
             longitude = mLastLocation.getLongitude();
-            try{
+            try {
                 List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
                 City = addresses.get(0).getLocality();
                 getData();
-            }catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     };
 
-    public boolean isLocationEnabled(){
+    public boolean isLocationEnabled() {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         return lm.isProviderEnabled(LocationManager.GPS_PROVIDER) || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-    public boolean CheckPermission(){
+    public boolean CheckPermission() {
         return ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public void requestPermissions(){
+    public void requestPermissions() {
         ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_ID);
     }
 
@@ -188,8 +198,8 @@ public class HomeScreen extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if(requestCode == PERMISSION_ID){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == PERMISSION_ID) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation();
             }
         }
@@ -198,54 +208,131 @@ public class HomeScreen extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(CheckPermission()){
+        if (CheckPermission()) {
             getLastLocation();
         }
     }
 
-    public void getData(){
+    public void getData() {
         RetrofitInstance.getInstance();
-        RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3").enqueue(new Callback<ModelClass>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onResponse(@NonNull Call<ModelClass> call, @NonNull Response<ModelClass> response) {
-                assert response.body() != null;
 
-                double uv = response.body().getCurrent().getUv();
-                String uv_des;
-                if(uv>0 & uv<=3){
-                    uv_des="Low";
-                }else if(uv>3 & uv<=6){
-                    uv_des="Moderate";
-                }else if(uv>6 & uv<=9){
-                    uv_des="High";
-                }else{
-                    uv_des="Very High";
+        if (RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3") != null) {
+            Log.e("Himanshu-IF", "IF Statement Working");
+            RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3").enqueue(new Callback<ModelClass>() {
+                @Override
+                public void onResponse(Call<ModelClass> call, Response<ModelClass> response) {
+                    assert response.body() != null;
+
+                    double uv = response.body().getCurrent().getUv();
+                    String uv_des;
+                    if (uv > 0 & uv <= 3) {
+                        uv_des = "Low";
+                    } else if (uv > 3 & uv <= 6) {
+                        uv_des = "Moderate";
+                    } else if (uv > 6 & uv <= 9) {
+                        uv_des = "High";
+                    } else {
+                        uv_des = "Very High";
+                    }
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+//                Log.e("URL", String.valueOf(uri));
+                            ImageView imgIcon = findViewById(R.id.icon_hour);
+                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
+                        }
+                    });
+
+                    hr = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
+                    Log.d("Himanshu", hr);
+
+                    cityName.setText(String.valueOf(response.body().getLocation().getName()));
+                    temp.setText(String.valueOf(response.body().getCurrent().getTemp_c()));
+                    weather_des.setText(" " + response.body().getCurrent().getCondition().getText());
+                    max_min_temp.setText("Max/Min: " + response.body().getForecast().getForecastday().get(0).getDay().getMaxtemp_c() + "/" + response.body().getForecast().getForecastday().get(0).getDay().getMintemp_c() + "°C");
+
+                    feels_like_temp.setText((response.body().getCurrent().getFeelslike_c()) + "°C");
+                    humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
+                    wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
+                    wind_speed.setText((response.body().getCurrent().getWind_kph()) + " Km/h");
+                    uv_detail.setText(uv_des);
+                    visibility_detail.setText((response.body().getCurrent().getVis_km()) + " Km");
+                    air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
+                    precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
+                    cloud_cover_detail.setText((response.body().getCurrent().getCloud() + "%"));
+
+                    wt_layout.setVisibility(View.VISIBLE);
+                    loadGif.hideDialog();
                 }
 
-                cityName.setText(String.valueOf(response.body().getLocation().getName()));
-                temp.setText(String.valueOf(response.body().getCurrent().getTemp_c()));
-                weather_des.setText(" " + response.body().getCurrent().getCondition().getText());
-                max_min_temp.setText("Max/Min: " + response.body().getForecast().getForecastday().get(0).getDay().getMaxtemp_c() + "/" + response.body().getForecast().getForecastday().get(0).getDay().getMintemp_c() + "°C");
-                feels_like_temp.setText((response.body().getCurrent().getFeelslike_c()) + "°C");
-                humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
-                wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
-                wind_speed.setText((response.body().getCurrent().getWind_kph()) + " Km/h");
-                uv_detail.setText(uv_des);
-                visibility_detail.setText((response.body().getCurrent().getVis_km()) + " Km");
-                air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
-                precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
-                cloud_cover_detail.setText((response.body().getCurrent().getCloud() + "%"));
+                @Override
+                public void onFailure(Call<ModelClass> call, Throwable t) {
+                    Log.e("api", "OnFailure : " + t.getLocalizedMessage());
+                }
+            });
 
-                wt_layout.setVisibility(View.VISIBLE);
-                loadGif.hideDialog();
-            }
+        } else {
+            Log.e("Himanshu-IF", "ELSE Statement Working");
+            RetrofitInstance.apiInterface.getJson(apiKey, (latitude + "," + longitude), "3").enqueue(new Callback<ModelClass>() {
+                @SuppressLint("SetTextI18n")
+                @Override
+                public void onResponse(@NonNull Call<ModelClass> call, @NonNull Response<ModelClass> response) {
+                    assert response.body() != null;
 
-            @Override
-            public void onFailure(@NonNull Call<ModelClass> call, Throwable t) {
-                Log.e("api", "OnFailure : " + t.getLocalizedMessage());
-            }
-        });
+                    double uv = response.body().getCurrent().getUv();
+                    String uv_des;
+                    if (uv > 0 & uv <= 3) {
+                        uv_des = "Low";
+                    } else if (uv > 3 & uv <= 6) {
+                        uv_des = "Moderate";
+                    } else if (uv > 6 & uv <= 9) {
+                        uv_des = "High";
+                    } else {
+                        uv_des = "Very High";
+                    }
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+//                Log.e("URL", String.valueOf(uri));
+                            ImageView imgIcon = findViewById(R.id.icon_hour);
+                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
+                        }
+                    });
+
+                    hr = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
+                    Log.d("Himanshu", hr);
+
+                    cityName.setText(String.valueOf(response.body().getLocation().getName()));
+                    temp.setText(String.valueOf(response.body().getCurrent().getTemp_c()));
+                    weather_des.setText(" " + response.body().getCurrent().getCondition().getText());
+                    max_min_temp.setText("Max/Min: " + response.body().getForecast().getForecastday().get(0).getDay().getMaxtemp_c() + "/" + response.body().getForecast().getForecastday().get(0).getDay().getMintemp_c() + "°C");
+
+                    feels_like_temp.setText((response.body().getCurrent().getFeelslike_c()) + "°C");
+                    humidity_per.setText((response.body().getCurrent().getHumidity()) + "%");
+                    wind_dir.setText(response.body().getCurrent().getWind_dir() + " Wind");
+                    wind_speed.setText((response.body().getCurrent().getWind_kph()) + " Km/h");
+                    uv_detail.setText(uv_des);
+                    visibility_detail.setText((response.body().getCurrent().getVis_km()) + " Km");
+                    air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
+                    precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
+                    cloud_cover_detail.setText((response.body().getCurrent().getCloud() + "%"));
+
+                    wt_layout.setVisibility(View.VISIBLE);
+                    loadGif.hideDialog();
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ModelClass> call, Throwable t) {
+                    Log.e("api", "OnFailure : " + t.getLocalizedMessage());
+                }
+            });
+        }
     }
 }
 
