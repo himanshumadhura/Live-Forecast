@@ -5,7 +5,7 @@ public class Hour {
     private String time;
     private double temp_c;
     private double temp_f;
-    private Condition_hour condition_hour;
+    private Condition_hour condition;
 
     public Hour() {
     }
@@ -15,7 +15,7 @@ public class Hour {
         this.time = time;
         this.temp_c = temp_c;
         this.temp_f = temp_f;
-        this.condition_hour = condition_hour;
+        this.condition = condition_hour;
     }
 
     public String getTime() {
@@ -31,6 +31,6 @@ public class Hour {
     }
 
     public Condition_hour getCondition_hour() {
-        return condition_hour;
+        return condition;
     }
 }

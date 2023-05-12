@@ -50,12 +50,14 @@ import retrofit2.Response;
 
 public class HomeScreen extends AppCompatActivity {
 
+    String hour_detail;
+
     FusedLocationProviderClient flpc;
     Geocoder geocoder;
     int PERMISSION_ID = 44;
     double longitude, latitude;
     String City, hr;
-    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail, max_min_temp, hour, temp_hour;
+    TextView cityName, temp, weather_des, feels_like_temp, humidity_per, wind_dir, wind_speed, uv_detail, visibility_detail, air_pressure, precip_detail, cloud_cover_detail, max_min_temp;
     ConstraintLayout wt_layout;
     Loading loadGif;
     private final String apiKey = "f6daa7c697944f61bee95421232804";
@@ -73,8 +75,6 @@ public class HomeScreen extends AppCompatActivity {
         temp = findViewById(R.id.temp);
         weather_des = findViewById(R.id.weather_des);
         max_min_temp = findViewById(R.id.max_min_temp);
-//        hour = findViewById(R.id.hour);
-        temp_hour = findViewById(R.id.hour_temp);
         feels_like_temp = findViewById(R.id.feel_like_temp);
         humidity_per = findViewById(R.id.humidity_per);
         wind_dir = findViewById(R.id.wind_dir);
@@ -94,7 +94,7 @@ public class HomeScreen extends AppCompatActivity {
 
             FragmentManager frm = getSupportFragmentManager();
             FragmentTransaction ft = frm.beginTransaction();
-            ft.add(R.id.frag1, new fragment1(i + ":00"));
+            ft.add(R.id.frag1, new fragment1(apiKey, i));
             ft.commit();
         }
 
@@ -234,17 +234,17 @@ public class HomeScreen extends AppCompatActivity {
                     } else {
                         uv_des = "Very High";
                     }
-
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    StorageReference storageRef = storage.getReference();
-                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-//                Log.e("URL", String.valueOf(uri));
-                            ImageView imgIcon = findViewById(R.id.icon_hour);
-                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
-                        }
-                    });
+//
+//                    FirebaseStorage storage = FirebaseStorage.getInstance();
+//                    StorageReference storageRef = storage.getReference();
+//                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                        @Override
+//                        public void onSuccess(Uri uri) {
+////                Log.e("URL", String.valueOf(uri));
+//                            ImageView imgIcon = findViewById(R.id.icon_hour);
+//                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
+//                        }
+//                    });
 
                     hr = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
                     Log.d("Himanshu", hr);
@@ -263,6 +263,8 @@ public class HomeScreen extends AppCompatActivity {
                     air_pressure.setText((response.body().getCurrent().getPressure_mb()) + " hPa");
                     precip_detail.setText((response.body().getCurrent().getPrecip_mm()) + " mm");
                     cloud_cover_detail.setText((response.body().getCurrent().getCloud() + "%"));
+                    hour_detail = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
+                    Log.e("HOUR", hour_detail);
 
                     wt_layout.setVisibility(View.VISIBLE);
                     loadGif.hideDialog();
@@ -273,6 +275,8 @@ public class HomeScreen extends AppCompatActivity {
                     Log.e("api", "OnFailure : " + t.getLocalizedMessage());
                 }
             });
+
+//----------------------------------------------------------------------------------------------------------------------------------------------
 
         } else {
             Log.e("Himanshu-IF", "ELSE Statement Working");
