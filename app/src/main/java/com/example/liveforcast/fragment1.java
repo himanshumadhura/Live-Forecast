@@ -49,8 +49,6 @@ public class fragment1 extends Fragment {
                 assert response.body() != null;
 
                 String imageCode = response.body().getForecast().getForecastday().get(0).getHour().get(i).getCondition_hour().getIcon().substring(35);
-                Log.e("ICON", (imageCode));
-
 
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
