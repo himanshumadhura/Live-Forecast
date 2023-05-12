@@ -1,5 +1,6 @@
 package com.example.liveforcast;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +27,7 @@ import retrofit2.Response;
 
 public class fragment1 extends Fragment {
     private TextView hour, temp_hr;
-    private String apiKey, hourly;
+    final private String apiKey;
     int i;
 
     public fragment1(String apiKey, int i) {
@@ -42,8 +43,10 @@ public class fragment1 extends Fragment {
         temp_hr = view.findViewById(R.id.hour_temp);
         RetrofitInstance.getInstance();
         RetrofitInstance.apiInterface.getJson(apiKey,"Amritsar","3").enqueue(new Callback<ModelClass>() {
+            @SuppressLint("SetTextI18n")
             @Override
-            public void onResponse(Call<ModelClass> call, Response<ModelClass> response) {
+            public void onResponse(@NonNull Call<ModelClass> call, @NonNull  Response<ModelClass> response) {
+                assert response.body() != null;
 
                 String imageCode = response.body().getForecast().getForecastday().get(0).getHour().get(i).getCondition_hour().getIcon().substring(35);
                 Log.e("ICON", (imageCode));
@@ -65,7 +68,7 @@ public class fragment1 extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ModelClass> call, Throwable t) {
+            public void onFailure(@NonNull Call<ModelClass> call, @NonNull Throwable t) {
                 Log.e("api", t.getLocalizedMessage());
             }
         });
