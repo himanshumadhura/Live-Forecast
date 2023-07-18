@@ -42,7 +42,7 @@ public class fragment1 extends Fragment {
         hour = view.findViewById(R.id.hour);
         temp_hr = view.findViewById(R.id.hour_temp);
         RetrofitInstance.getInstance();
-        RetrofitInstance.apiInterface.getJson(apiKey,"Amritsar","3").enqueue(new Callback<ModelClass>() {
+        RetrofitInstance.apiInterface.getJson(apiKey,"Noida","3").enqueue(new Callback<ModelClass>() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onResponse(@NonNull Call<ModelClass> call, @NonNull  Response<ModelClass> response) {

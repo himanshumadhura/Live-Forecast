@@ -9,13 +9,11 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +24,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bumptech.glide.Glide;
 import com.example.liveforcast.API_Network.ModelClass;
 import com.example.liveforcast.API_Network.RetrofitInstance;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -35,10 +32,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,7 +83,6 @@ public class HomeScreen extends AppCompatActivity {
         flpc = LocationServices.getFusedLocationProviderClient(this);
         geocoder = new Geocoder(this, Locale.getDefault());
 
-
         for (int i = 0; i < 24; i++) {
 
             FragmentManager frm = getSupportFragmentManager();
@@ -135,7 +128,7 @@ public class HomeScreen extends AppCompatActivity {
                     }
                 });
             } else {
-                Toast.makeText(HomeScreen.this, "Loaction is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeScreen.this, "Location is disabled. Please turn it on...", Toast.LENGTH_LONG).show();
                 Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(i);
             }
@@ -219,6 +212,7 @@ public class HomeScreen extends AppCompatActivity {
         if (RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3") != null) {
             Log.e("Himanshu-IF", "IF Statement Working");
             RetrofitInstance.apiInterface.getJson(apiKey, String.valueOf(City), "3").enqueue(new Callback<ModelClass>() {
+                @SuppressLint("SetTextI18n")
                 @Override
                 public void onResponse(Call<ModelClass> call, Response<ModelClass> response) {
                     assert response.body() != null;
@@ -234,17 +228,6 @@ public class HomeScreen extends AppCompatActivity {
                     } else {
                         uv_des = "Very High";
                     }
-//
-//                    FirebaseStorage storage = FirebaseStorage.getInstance();
-//                    StorageReference storageRef = storage.getReference();
-//                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                        @Override
-//                        public void onSuccess(Uri uri) {
-////                Log.e("URL", String.valueOf(uri));
-//                            ImageView imgIcon = findViewById(R.id.icon_hour);
-//                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
-//                        }
-//                    });
 
                     hr = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
                     Log.d("Himanshu", hr);
@@ -297,17 +280,6 @@ public class HomeScreen extends AppCompatActivity {
                     } else {
                         uv_des = "Very High";
                     }
-
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
-                    StorageReference storageRef = storage.getReference();
-                    storageRef.child("weather_hourly_icons/day/113.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-//                Log.e("URL", String.valueOf(uri));
-                            ImageView imgIcon = findViewById(R.id.icon_hour);
-                            Glide.with(HomeScreen.this).load(uri).into(imgIcon);
-                        }
-                    });
 
                     hr = response.body().getForecast().getForecastday().get(0).getHour().get(0).getTime();
                     Log.d("Himanshu", hr);
